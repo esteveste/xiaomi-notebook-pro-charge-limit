@@ -1,0 +1,6 @@
+#!/bin/sh
+# SPDX-License-Identifier: MIT
+if [ "$#" -eq 0 ]; then
+    set -- status
+fi
+exec /usr/bin/python3 /usr/local/lib/xiaomi-charge-limit/controller.py "$@"

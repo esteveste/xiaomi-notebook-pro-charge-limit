@@ -1,0 +1,32 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        python: ['3.10', '3.14']
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Tests without hardware access
+        run: python3 -m unittest discover -s tests -v
+      - name: Configuration and shell syntax
+        run: |
+          python3 src/controller.py check --config config/xiaomi-charge-limit.json
+          sh -n install.sh uninstall.sh scripts/xiaomi-charge-limit
+      - name: Stage installation without root or hardware access
+        run: ./install.sh --destdir ./build/staging
+      - name: Whitespace
+        run: git diff --check

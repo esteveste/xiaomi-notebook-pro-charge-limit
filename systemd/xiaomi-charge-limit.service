@@ -1,0 +1,40 @@
+[Unit]
+Description=Xiaomi TM1701 battery charge limit controller
+After=local-fs.target
+ConditionPathExists=/dev/port
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Service]
+Type=notify
+ExecStart=/usr/bin/python3 /usr/local/lib/xiaomi-charge-limit/controller.py run
+ExecStopPost=/usr/bin/python3 /usr/local/lib/xiaomi-charge-limit/controller.py release
+Restart=on-failure
+RestartSec=20
+WatchdogSec=150
+TimeoutStartSec=150
+TimeoutStopSec=20
+RuntimeDirectory=xiaomi-charge-limit
+RuntimeDirectoryMode=0755
+StateDirectory=xiaomi-charge-limit
+StateDirectoryMode=0755
+UMask=0022
+NoNewPrivileges=yes
+CapabilityBoundingSet=CAP_SYS_RAWIO
+DevicePolicy=closed
+DeviceAllow=/dev/port rw
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/run/lock
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+PrivateTmp=yes
+RestrictAddressFamilies=AF_UNIX
+RestrictNamespaces=yes
+LockPersonality=yes
+
+[Install]
+WantedBy=multi-user.target
